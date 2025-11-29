@@ -33,13 +33,11 @@ func part1(left []int, right []int) int {
 }
 
 func part2(left []int, right []int) int {
-	// Build frequency map of right
 	rightFreq := make(map[int]int)
 	for _, v := range right {
 		rightFreq[v]++
 	}
 
-	// Calculate similarity score (value * frequency in right)
 	total := 0
 	for _, v := range left {
 		total += v * rightFreq[v]

@@ -16,7 +16,7 @@ func LoadEnv() {
 	// Try to load .env file from current dir or parent dirs
 	// godotenv.Load() will search upwards for .env file
 	_ = godotenv.Load()
-	
+
 	// Also try explicit path to project root
 	// This handles cases where we run from subdirectories
 	if _, err := os.Stat(".env"); os.IsNotExist(err) {
