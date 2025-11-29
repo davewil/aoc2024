@@ -1,0 +1,27 @@
+# Binaries
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+day*/day*
+!day*/*.go
+
+# Test binary
+*.test
+
+# Output of the go coverage tool
+*.out
+
+# Input files (don't commit puzzle inputs per AoC rules)
+day*/input.txt
+
+# Environment variables
+.env
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
