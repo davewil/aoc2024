@@ -73,7 +73,7 @@ func test1(report []int) bool {
 		}
 	}
 
-	return increasing == len(report)-1 || descreasing == len(report)-1
+	return increasing == len(report)-1 || decreasing == len(report)-1
 }
 
 func test2(report []int) bool {
