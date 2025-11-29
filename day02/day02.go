@@ -3,7 +3,6 @@ package main
 import (
 	"aoc2024/utils"
 	"fmt"
-	"slices"
 	"strconv"
 	"strings"
 )
@@ -43,9 +42,20 @@ func part1(input [][]int) int {
 func part2(input [][]int) int {
 	count := 0
 	for _, report := range input {
-		variations := generateVariations(report)
-		if slices.ContainsFunc(variations, isValid) {
+		if isValid(report) {
 			count++
+			continue
+		}
+
+		for i := 0; i < len(report); i++ {
+			variation := make([]int, 0, len(report)-1)
+			variation = append(variation, report[:i]...)
+			variation = append(variation, report[i+1:]...)
+
+			if isValid(variation) {
+				count++
+				break
+			}
 		}
 	}
 	return count
@@ -60,20 +70,31 @@ func test1(report []int) bool {
 		return true
 	}
 
-	increasing := 0
-	decreasing := 0
-
+	direction := 0 // 1 for increasing, -1 for decreasing
 	for i := 1; i < len(report); i++ {
-		if report[i] > report[i-1] {
-			increasing++
-		} else if report[i] < report[i-1] {
-			decreasing++
-		} else {
+		diff := report[i] - report[i-1]
+		if diff == 0 {
+			return false
+		}
+
+		if direction == 0 {
+			if diff > 0 {
+				direction = 1
+			} else {
+				direction = -1
+			}
+			continue
+		}
+
+		if direction > 0 && diff < 0 {
+			return false
+		}
+		if direction < 0 && diff > 0 {
 			return false
 		}
 	}
 
-	return increasing == len(report)-1 || decreasing == len(report)-1
+	return true
 }
 
 func test2(report []int) bool {
@@ -84,17 +105,6 @@ func test2(report []int) bool {
 		}
 	}
 	return true
-}
-
-func generateVariations(report []int) [][]int {
-	variations := make([][]int, len(report))
-	for i := 0; i < len(report); i++ {
-		variation := make([]int, 0, len(report))
-		variation = append(variation, report[:i]...)
-		variation = append(variation, report[i+1:]...)
-		variations[i] = variation
-	}
-	return variations
 }
 
 func main() {
