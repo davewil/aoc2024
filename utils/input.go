@@ -11,9 +11,17 @@ import (
 )
 
 // LoadEnv loads environment variables from .env file if it exists
+// It searches in the current directory and parent directories
 func LoadEnv() {
-	// Try to load .env file, but don't error if it doesn't exist
+	// Try to load .env file from current dir or parent dirs
+	// godotenv.Load() will search upwards for .env file
 	_ = godotenv.Load()
+	
+	// Also try explicit path to project root
+	// This handles cases where we run from subdirectories
+	if _, err := os.Stat(".env"); os.IsNotExist(err) {
+		_ = godotenv.Load("../.env")
+	}
 }
 
 // GetPuzzleInput fetches the puzzle input for a given day from the Advent of Code website

@@ -3,22 +3,48 @@ package main
 import (
 	"aoc2024/utils"
 	"fmt"
+	"slices"
 )
 
-func parseInput(input string) ([]string, error) {
+func parseInput(input string) ([]int, []int, error) {
 	lines := utils.ReadLines(input)
-	// Add your parsing logic here
-	return lines, nil
+	left := make([]int, len(lines))
+	right := make([]int, len(lines))
+
+	for i, line := range lines {
+		var l, r int
+		if _, err := fmt.Sscanf(line, "%d %d", &l, &r); err != nil {
+			return nil, nil, err
+		}
+		left[i] = l
+		right[i] = r
+	}
+	return left, right, nil
 }
 
-func part1(input []string) int {
-	// Solve part 1 here
-	return 0
+func part1(left []int, right []int) int {
+	slices.Sort(left)
+	slices.Sort(right)
+	total := 0
+	for i := range left {
+		total += utils.Abs(left[i] - right[i])
+	}
+	return total
 }
 
-func part2(input []string) int {
-	// Solve part 2 here
-	return 0
+func part2(left []int, right []int) int {
+	// Build frequency map of right
+	rightFreq := make(map[int]int)
+	for _, v := range right {
+		rightFreq[v]++
+	}
+
+	// Calculate similarity score (value * frequency in right)
+	total := 0
+	for _, v := range left {
+		total += v * rightFreq[v]
+	}
+	return total
 }
 
 func main() {
@@ -30,12 +56,12 @@ func main() {
 		return
 	}
 
-	data, err := parseInput(input)
+	left, right, err := parseInput(input)
 	if err != nil {
 		fmt.Println("Error parsing input:", err)
 		return
 	}
 
-	fmt.Println("Part 1:", part1(data))
-	fmt.Println("Part 2:", part2(data))
+	fmt.Println("Part 1:", part1(left, right))
+	fmt.Println("Part 2:", part2(left, right))
 }
