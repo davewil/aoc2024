@@ -47,7 +47,7 @@ func part2(input [][]int) int {
 			continue
 		}
 
-		for i := 0; i < len(report); i++ {
+		for i := range report {
 			variation := make([]int, 0, len(report)-1)
 			variation = append(variation, report[:i]...)
 			variation = append(variation, report[i+1:]...)
