@@ -7,69 +7,68 @@ import (
 	"strconv"
 )
 
+type Instruction struct {
+	Type string // "mul", "do", "don't"
+	X    int
+	Y    int
+}
+
 var (
-	mulPattern         = regexp.MustCompile(`mul\((\d{1,3}),(\d{1,3})\)`)
 	instructionPattern = regexp.MustCompile(`mul\((\d{1,3}),(\d{1,3})\)|do\(\)|don't\(\)`)
 )
 
-func parseInput(input string) ([][2]int, error) {
-	matches := mulPattern.FindAllStringSubmatch(input, -1)
-	allPairs := make([][2]int, 0, len(matches))
-
-	for _, m := range matches {
-		x, err := strconv.Atoi(m[1])
-		if err != nil {
-			return nil, err
-		}
-		y, err := strconv.Atoi(m[2])
-		if err != nil {
-			return nil, err
-		}
-
-		allPairs = append(allPairs, [2]int{x, y})
-	}
-
-	return allPairs, nil
-}
-
-func part1(input [][2]int) int {
-	total := 0
-	for _, pair := range input {
-		total += pair[0] * pair[1]
-	}
-	return total
-}
-
-func part2(input string) int {
+func parseInput(input string) ([]Instruction, error) {
 	matches := instructionPattern.FindAllStringSubmatch(input, -1)
-	enabled := true
-	total := 0
+	instructions := make([]Instruction, 0, len(matches))
 
 	for _, m := range matches {
 		switch m[0] {
 		case "do()":
-			enabled = true
+			instructions = append(instructions, Instruction{Type: "do"})
 		case "don't()":
-			enabled = false
+			instructions = append(instructions, Instruction{Type: "don't"})
 		default:
-			if !enabled {
-				continue
-			}
-
-			if len(m) < 3 {
-				continue
-			}
-
 			x, err := strconv.Atoi(m[1])
 			if err != nil {
-				continue
+				return nil, err
 			}
 			y, err := strconv.Atoi(m[2])
 			if err != nil {
-				continue
+				return nil, err
 			}
+			instructions = append(instructions, Instruction{Type: "mul", X: x, Y: y})
+		}
+	}
 
-			total += x * y
+	return instructions, nil
+}
+
+func part1(input []Instruction) int {
+	total := 0
+
+	for _, inst := range input {
+		if inst.Type == "mul" {
+			total += inst.X * inst.Y
+		}
+	}
+
+	return total
+}
+
+func part2(input []Instruction) int {
+	enabled := true
+	total := 0
+
+	for _, inst := range input {
+		switch inst.Type {
+		case "do":
+			enabled = true
+		case "don't":
+			enabled = false
+		case "mul":
+			if enabled {
+				total += inst.X * inst.Y
+			}
 		}
 	}
 
@@ -85,12 +84,12 @@ func main() {
 		return
 	}
 
-	data, err := parseInput(input)
+	instructions, err := parseInput(input)
 	if err != nil {
 		fmt.Println("Error parsing input:", err)
 		return
 	}
 
-	fmt.Println("Part 1:", part1(data))
-	fmt.Println("Part 2:", part2(input))
+	fmt.Println("Part 1:", part1(instructions))
+	fmt.Println("Part 2:", part2(instructions))
 }
